@@ -13,6 +13,9 @@ func hello(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 	ctx, cancel := context.WithCancel(ctx)
 
+	// to be uncancelable
+	//ctx = context.WithoutCancel(ctx)
+
 	defer cancel()
 
 	ch := make(chan string, 1)
@@ -25,13 +28,13 @@ func hello(w http.ResponseWriter, req *http.Request) {
 	case result := <-ch:
 		response["msg"] = result
 		responseJson, _ := json.Marshal(response)
-		w.Write(responseJson)
+		_, _ = w.Write(responseJson)
 	}
 }
 
 func main() {
 	http.HandleFunc("/", hello)
-	http.ListenAndServe(":8080", nil)
+	_ = http.ListenAndServe(":8080", nil)
 }
 
 func doSomething(ctx context.Context, ch chan string) {
@@ -48,6 +51,7 @@ func doSomething(ctx context.Context, ch chan string) {
 			fmt.Printf("Execution %d\n", count)
 			if count >= maxExecutions {
 				ch <- "Hello, World!"
+				return
 			}
 		}
 	}
