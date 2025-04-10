@@ -2,7 +2,9 @@ package context_logger
 
 import (
 	"context"
+	"fmt"
 	"go.uber.org/zap"
+	"runtime"
 )
 
 type loggerCtxKey struct{}
@@ -35,6 +37,11 @@ func Error(ctx context.Context, msg string, err error, fields ...zap.Field) {
 }
 
 func getLoggerAndAppendedFieldsFromContext(ctx context.Context, fields ...zap.Field) (*zap.Logger, []zap.Field) {
+	_, file, no, ok := runtime.Caller(2)
+	if ok {
+		fields = append(fields, zap.String("caller", fmt.Sprintf("%s:%d", file, no)))
+	}
+
 	logger, ok := ctx.Value(loggerCtxKey{}).(*zap.Logger)
 	if !ok {
 		return nil, nil
