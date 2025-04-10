@@ -1,0 +1,18 @@
+isConnected := [][]int{
+    {1, 1, 0},
+    {1, 1, 0},
+    {0, 0, 1},
+}
+
+
+1 - Criar provencias iniciais com um array de suas cidades
+
+Conexãoes
+Cidade 0 -> [1]
+Cidade 1 -> [0]
+Cidade 3 -> []
+
+
+0 - [0]
+1 - [1]
+2 - [2]
