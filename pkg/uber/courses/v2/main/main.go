@@ -1,30 +1,33 @@
 package main
 
-var courses [][]int
-
 /*
-0-> 0 1 0 0 0
-1-> 0 0 1 0 1
-2-> 0 0 0 1 1
-3-> 0 0 0 0 0
-4-> 0 0 0 0 0
 
+Algorithm to check if the course list is valid.
+
+It will receive a list of course pairs [][]int, where the first element of the pair is the course
+and the second element is the course that the first depends on.
+
+Example: [0, 1] means that course 0 depends on course 1.
+List: [[0, 1] [1, 2] [1, 4] [2, 3] [2, 4]]
+The course list is valid if there are no cycles, that is, if there is no course that indirectly depends on itself.
 */
 
-func dfs(graph [][]int, visited []bool, node int) bool {
-	if visited[node] {
+func dfs(graph [][]int, visited []bool, completed []bool, node int) bool {
+	if visited[node] && !completed[node] {
 		return false
 	}
+
 	visited[node] = true
 
 	for i := 0; i < len(graph); i++ {
 		if graph[node][i] == 1 {
-			if !dfs(graph, visited, i) {
+			if !dfs(graph, visited, completed, i) {
 				return false
 			}
 		}
 	}
 
+	completed[node] = true
 	return true
 }
 
@@ -59,39 +62,18 @@ func printGraph(graph [][]int) {
 	println("------")
 }
 
-func main() {
+func checkGradeIsValid(courses [][]int) bool {
 	var graph [][]int
 	var result bool
 	var visited []bool
+	var completed []bool
 
-	//valid
-	courses = [][]int{
-		{0, 1},
-		{1, 2},
-		{1, 4},
-		{2, 3},
-		{2, 4},
-	}
 	graph = buildGraph(courses)
 	printGraph(graph)
 	visited = make([]bool, len(graph))
-	result = dfs(graph, visited, 0)
+	completed = make([]bool, len(graph))
+	result = dfs(graph, visited, completed, 0)
 	println(result)
 	println("\n--------------------------")
-
-	//invalid
-	courses = [][]int{
-		{0, 1},
-		{1, 2},
-		{1, 4},
-		{2, 3},
-		{3, 1},
-	}
-	graph = buildGraph(courses)
-	printGraph(graph)
-	visited = make([]bool, len(graph))
-	result = dfs(graph, visited, 0)
-	println(result)
-	println("\n--------------------------")
-
+	return result
 }
